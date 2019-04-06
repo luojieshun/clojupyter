@@ -5,18 +5,19 @@
    ,,
    [clojupyter]
    [clojupyter.kernel.state			:as state]
-   [clojupyter.middleware.log-traffic		:as log-traffic]
-   [clojupyter.misc.config			:as cfg]
+   [clojupyter.kernel.middleware.log-traffic	:as log-traffic]
+   [clojupyter.kernel.config			:as cfg]
    [clojupyter.kernel.stacktrace		:as stacktrace]
-   [clojupyter.misc.version			:as version]))
+   [clojupyter.kernel.version			:as version]))
 
 (defn init-global-state!
   "Initializes global state. May only be called once."
   []
   (cfg/init!)
   (log/set-level! (cfg/log-level))
-  (alter-var-root #'clojupyter/*clojupyter-version* (constantly (version/version)))
-  (println (str "Clojupyter: Version " (version/version-string) "."))
+  (let [ver (version/version)]
+    (alter-var-root #'clojupyter/*version* (constantly ver))
+    (println (str "Clojupyter: Version " (:formatted-version ver) ".")))
   (when-let [config-file (cfg/config-file)]
     (println (str "Clojupyter: Configuration read from " config-file "."))
     (println (str "Clojupyter configuration: "))

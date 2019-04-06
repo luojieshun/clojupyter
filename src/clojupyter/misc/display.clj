@@ -1,12 +1,9 @@
 (ns clojupyter.misc.display
   (:require
-   [cheshire.core				:as cheshire]
-   [clojure.data.codec.base64			:as b64]
-   [clojure.java.io				:as io]
    [hiccup.core					:as hiccup]
    ,,
    [clojupyter.kernel.state			:as state]
-   [clojupyter.misc.util			:as u]
+   [clojupyter.kernel.util			:as u]
    [clojupyter.protocol.mime-convertible	:as mc])
   (:import
    [javax.imageio ImageIO]
@@ -83,4 +80,14 @@
   [markdown-str]
   (markdown markdown-str))
 
+;; Vega Lite
 
+(defn vega-lite
+  [v]
+  (u/stream-to-string {:application/vnd.vegalite.v1+json v}))
+
+(defn render-mime
+  [mime-type v]
+  (reify mc/PMimeConvertible
+    (to-mime [_]
+      (u/stream-to-string (hash-map mime-type v)))))
